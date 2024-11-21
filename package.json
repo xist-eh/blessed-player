@@ -1,10 +1,14 @@
 {
   "type": "module",
+  "scripts": {
+    "gyp": "node-gyp configure build"
+  },
   "dependencies": {
     "audic": "^3.0.2",
     "blessed": "^0.1.81",
     "chokidar": "^4.0.1",
     "get-folder-size": "^5.0.0",
-    "music-metadata": "^10.6.0"
+    "music-metadata": "^10.6.0",
+    "node-gyp": "^10.2.0"
   }
 }

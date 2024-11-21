@@ -2,8 +2,11 @@
 #include "SDL.h"
 #include "SDL_mixer.h"
 
+#include <chrono>
+#include <thread>
 
-static const char *MY_COOL_MP3 = "D:\\Dev\\blessed-player\\test-music\\'Cause I'm A Man - Tame Impala.mp3";
+
+static const char *MY_COOL_MP3 = "D:\\Dev\\blessed-player\\test-music\\bound2.m4a";
 
 int main(int argc, char **argv) {
     int result = 0;
@@ -20,11 +23,17 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    printf("Hello!");
+    printf("About to play MP3...");
 
     Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
     Mix_Music *music = Mix_LoadMUS(MY_COOL_MP3);
     Mix_PlayMusic(music, 1);
+
+    printf("Playing MP3 \n");
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(2500));
+
+    Mix_SetMusicPosition(100);
 
     while (!SDL_QuitRequested()) {
         SDL_Delay(250);
