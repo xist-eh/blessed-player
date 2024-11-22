@@ -10,4 +10,4 @@ await SongsUtility.addRootFolder("test-music");
 
 const obj = mixPlayer("hello");
 
-console.log(obj.msg);
+console.log(obj.myFunction());
