@@ -6,10 +6,10 @@ run: src/app.js
 	node src/app.js
 
 clean: 
-	rm  prefs.json
-	rm songs.json
-	rm included-folders.json
-	rm playlists.json
+	rm config/prefs.json
+	rm config/songs.json
+	rm config/included-folders.json
+	rm config/playlists.json
 
 player-addon:
-	cd player && make
+	cd src/player && make

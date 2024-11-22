@@ -1,11 +1,13 @@
-// import { ProgramFiles } from "./helpers/files.js";
+import { ProgramFiles } from "./helpers/files.js";
 
 import { SongsUtility } from "./helpers/songs.js";
 
-// await SongsUtility.init();
+import { mixerPlayer_addon } from "./player/player.js";
 
-// await SongsUtility.addRootFolder("test-music");
+await SongsUtility.init();
 
-// // await SongsUtility.playSong(
-// //   "D:\\Dev\\blessed-player\\test-music\\Bound 2 - Kanye West.mp3"
-// // );
+await SongsUtility.addRootFolder("test-music");
+
+const obj = new mixerPlayer_addon.MyObject(10);
+
+console.log(obj.plusOne());

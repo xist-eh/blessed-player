@@ -3,21 +3,13 @@ import path from "path";
 import { createHash } from "crypto";
 
 import { parseFile } from "music-metadata";
-import Audic from "audic";
 
 import { ProgramFiles } from "./files.js";
 
 class SongsUtility {
   static supportedSongExtensions = [".mp4", ".mp3", ".wav"];
   #songs = [];
-  #audicIntance = new Audic();
-  async playSong(songPath) {
-    this.#audicIntance = new Audic(songPath);
 
-    this.#audicIntance.duration = 100;
-    this.#audicIntance.play();
-    this.#audicIntance.volume = 0.4;
-  }
   async indexSong(songPath) {
     const metadata = await parseFile(songPath);
     ProgramFiles.songs.songsIndex[
