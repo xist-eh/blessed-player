@@ -1,8 +1,8 @@
 {
     "targets": [
         {
-            "target_name": "audio-player",
-            "sources": ["src/addon.cpp", "src/myobject.cpp"],
+            "target_name": "mix-player",
+            "sources": ["src/addon.cpp"],
             "include_dirs": ["lib/include/"],
             "conditions": [['OS == "win"', {
 				'cflags': [ '-D_REENTRANT' ],

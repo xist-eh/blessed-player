@@ -1,7 +1,5 @@
 import { createRequire } from "module";
 
-const mixerPlayer_addon = createRequire(import.meta.url)(
-  "./build/Release/audio-player"
-);
+const mixPlayer = createRequire(import.meta.url)("./build/Release/mix-player");
 
-export { mixerPlayer_addon };
+export { mixPlayer };

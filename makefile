@@ -11,5 +11,8 @@ clean:
 	rm config/included-folders.json
 	rm config/playlists.json
 
-player-addon:
+clean-addon:
+	rm -rf src/player/build
+
+addon:
 	cd src/player && make
