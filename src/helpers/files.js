@@ -2,10 +2,10 @@ import { readFileSync, existsSync, writeFile, writeFileSync, write } from "fs";
 import path from "path";
 
 class ProgramFiles {
-  static prefsFile = path.resolve("./prefs.json");
-  static songsFile = path.resolve("./songs.json");
-  static includedfoldersFile = path.resolve("./included-folders.json");
-  static playlistsFile = path.resolve("./playlists.json");
+  static prefsFile = path.resolve("./config/prefs.json");
+  static songsFile = path.resolve("./config/songs.json");
+  static includedfoldersFile = path.resolve("./config/included-folders.json");
+  static playlistsFile = path.resolve("./config/playlists.json");
 
   prefs = Object.seal({
     recursiveFolderSearch: true,

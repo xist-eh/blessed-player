@@ -10,3 +10,6 @@ clean:
 	del songs.json
 	del included-folders.json
 	del playlists.json
+
+addon:
+	cd player && make
