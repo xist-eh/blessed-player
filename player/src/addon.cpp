@@ -13,7 +13,7 @@ using v8::Exception;
 using v8::Value;
 
 
-static const char *MY_COOL_MP3 = "D:\\Dev\\blessed-player\\test-music\\bound2.m4a";
+static const char *MY_COOL_MP3 = "D:\\Dev\\blessed-player\\test-music\\'Cause I'm A Man - Tame Impala.mp3";
 
 void Hello(const v8::FunctionCallbackInfo<v8::Value>& args) {
 //   Isolate* isolate = args.GetIsolate();
@@ -42,10 +42,6 @@ void Hello(const v8::FunctionCallbackInfo<v8::Value>& args) {
     Mix_PlayMusic(music, 1);
 
     printf("Playing MP3 \n");
-
- 
-
-    Mix_SetMusicPosition(100);
 
     while (!SDL_QuitRequested()) {
         SDL_Delay(250);

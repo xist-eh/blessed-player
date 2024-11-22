@@ -1,17 +1,11 @@
-import { ProgramFiles } from "./helpers/files.js";
+// import { ProgramFiles } from "./helpers/files.js";
 
 import { SongsUtility } from "./helpers/songs.js";
 
-import { createRequire } from "module";
+// await SongsUtility.init();
 
-const m = createRequire(import.meta.url)("../mixer-player");
+// await SongsUtility.addRootFolder("test-music");
 
-await SongsUtility.init();
-
-await SongsUtility.addRootFolder("test-music");
-
-// await SongsUtility.playSong(
-//   "D:\\Dev\\blessed-player\\test-music\\Bound 2 - Kanye West.mp3"
-// );
-
-console.log(m.hello());
+// // await SongsUtility.playSong(
+// //   "D:\\Dev\\blessed-player\\test-music\\Bound 2 - Kanye West.mp3"
+// // );

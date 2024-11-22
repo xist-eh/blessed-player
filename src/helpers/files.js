@@ -58,33 +58,27 @@ class ProgramFiles {
       ? Object.entries(
           JSON.parse(readFileSync(ProgramFiles.prefsFile))
         ).forEach(([key, val]) => (this.prefs[key] = val))
-      : writeFileSync(ProgramFiles.prefsFile, JSON.stringify(this.prefs));
+      : this.savePrefs();
 
     //For song file
     existsSync(ProgramFiles.songsFile)
       ? Object.entries(
           JSON.parse(readFileSync(ProgramFiles.songsFile))
         ).forEach(([key, val]) => (this.songs[key] = val))
-      : writeFileSync(ProgramFiles.songsFile, JSON.stringify(this.songs));
+      : this.saveSongs();
 
     //For folder file
     existsSync(ProgramFiles.includedfoldersFile)
       ? Object.entries(
           JSON.parse(readFileSync(ProgramFiles.includedfoldersFile))
         ).forEach(([key, val]) => (this.includedFolders[key] = val))
-      : writeFileSync(
-          ProgramFiles.includedfoldersFile,
-          JSON.stringify(this.includedFolders)
-        );
+      : this.saveIncludedFolders();
     //For playlists file
     existsSync(ProgramFiles.playlistsFile)
       ? Object.entries(
           JSON.parse(readFileSync(ProgramFiles.playlistsFile))
         ).forEach(([key, val]) => (this.playlists[key] = val))
-      : writeFileSync(
-          ProgramFiles.playlistsFile,
-          JSON.stringify(this.playlists)
-        );
+      : this.savePlaylists();
   }
 }
 
