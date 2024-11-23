@@ -5,11 +5,34 @@ import { createHash } from "crypto";
 import { parseFile } from "music-metadata";
 
 import { ProgramFiles } from "./files.js";
+import { player } from "../player/player.js";
 
 class SongsUtility {
   static supportedSongExtensions = [".mp4", ".mp3", ".wav"];
-  #songs = [];
 
+  songsArr = [];
+
+  playSong(index) {
+    player.pushFileToQueue(
+      ProgramFiles.songs.songsIndex["0e6246c9007e4356cb095063911a4559"].path
+    );
+    player.play();
+  }
+
+  getSongs() {
+    Object.entries(ProgramFiles.songs.songsIndex).forEach(([key, value]) => {
+      this.songsArr.push([
+        value.trackName,
+        value.artist,
+        JSON.stringify(Math.floor(value.duration / 60)) +
+          ":" +
+          JSON.stringify(
+            value.duration - Math.floor(value.duration / 60) * 10
+          ).slice(0, 2),
+      ]);
+    });
+    return this.songsArr;
+  }
   async indexSong(songPath) {
     const metadata = await parseFile(songPath);
     ProgramFiles.songs.songsIndex[
@@ -18,6 +41,7 @@ class SongsUtility {
       path: songPath,
       duration: Math.round(metadata.format.duration),
       trackName: metadata.common.title,
+      artist: metadata.common.albumartist,
     };
   }
   async recursiveRoot(dir, recurse = true) {

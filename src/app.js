@@ -1,11 +1,26 @@
 import { SongsUtility } from "./helpers/songs.js";
-import * as blessed from "blessed";
+import blessed from "blessed";
 
-await SongsUtility.init();
+import { getSongsViewBox } from "./ui/songsView.js";
 
 // Create a screen object.
-const screen = blessed.screen({
+const programScreen = blessed.screen({
   smartCSR: true,
 });
 
-screen.title = "my window title";
+programScreen.title = "blessed player";
+
+await SongsUtility.init();
+await SongsUtility.addRootFolder("test-music");
+
+const songsViewBox = getSongsViewBox();
+
+programScreen.append(songsViewBox);
+
+songsViewBox.children[0].focus();
+
+programScreen.render();
+
+programScreen.key(["escape", "q", "C-c"], function (ch, key) {
+  return process.exit(0);
+});
