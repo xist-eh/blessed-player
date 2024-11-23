@@ -1,13 +1,11 @@
-import { ProgramFiles } from "./helpers/files.js";
-
 import { SongsUtility } from "./helpers/songs.js";
-
-import { mixPlayer } from "./player/player.js";
+import * as blessed from "blessed";
 
 await SongsUtility.init();
 
-await SongsUtility.addRootFolder("test-music");
+// Create a screen object.
+const screen = blessed.screen({
+  smartCSR: true,
+});
 
-const obj = mixPlayer("hello");
-
-console.log(obj.myFunction());
+screen.title = "my window title";
