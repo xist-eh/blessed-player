@@ -8,6 +8,7 @@
     "chokidar": "^4.0.1",
     "cmake-js": "^7.3.0",
     "get-folder-size": "^5.0.0",
+    "mix-player": "^1.0.0",
     "music-metadata": "^10.6.0",
     "nan": "^2.22.0",
     "node-gyp": "^10.2.0"

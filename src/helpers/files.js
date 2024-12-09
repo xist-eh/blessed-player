@@ -1,4 +1,5 @@
 import { readFileSync, existsSync, writeFile, writeFileSync, write } from "fs";
+import { createHash } from "crypto";
 import path from "path";
 
 class ProgramFiles {
@@ -9,6 +10,7 @@ class ProgramFiles {
 
   prefs = Object.seal({
     recursiveFolderSearch: true,
+    namePattern: "{artist} - {name}",
     ui: {
       primaryColor: "#89CFF0",
       secondaryColor: "#088F8F",
@@ -17,7 +19,7 @@ class ProgramFiles {
   });
 
   songs = Object.seal({
-    songsIndex: {},
+    index: {},
   });
 
   includedFolders = Object.seal({

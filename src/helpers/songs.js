@@ -1,47 +1,31 @@
-import { readdir, existsSync, statSync, readdirSync } from "fs";
+import { existsSync, statSync, readdirSync } from "fs";
 import path from "path";
-import { createHash } from "crypto";
-
 import { parseFile } from "music-metadata";
+import { MixPlayer } from "mix-player";
 
 import { ProgramFiles } from "./files.js";
-import { player } from "../player/player.js";
 
 class SongsUtility {
-  static supportedSongExtensions = [".mp4", ".mp3", ".wav"];
-
-  songsArr = [];
+  static supportedSongExtensions = [".mp4", ".mp3", ".wav", ".m4a"];
+  songsQueue;
+  rightView;
 
   playSong(index) {
-    player.pushFileToQueue(
-      ProgramFiles.songs.songsIndex["0e6246c9007e4356cb095063911a4559"].path
-    );
-    player.play();
-  }
-
-  getSongs() {
-    Object.entries(ProgramFiles.songs.songsIndex).forEach(([key, value]) => {
-      this.songsArr.push([
-        value.trackName,
-        value.artist,
-        JSON.stringify(Math.floor(value.duration / 60)) +
-          ":" +
-          JSON.stringify(
-            value.duration - Math.floor(value.duration / 60) * 10
-          ).slice(0, 2),
-      ]);
-    });
-    return this.songsArr;
+    MixPlayer.play(index);
+    this.rightView.setCurrentSong(ProgramFiles.songs.index[index].trackName);
   }
   async indexSong(songPath) {
+    songPath = path.resolve(songPath);
     const metadata = await parseFile(songPath);
-    ProgramFiles.songs.songsIndex[
-      createHash("md5").update(path.win32.basename(songPath)).digest("hex")
-    ] = {
-      path: songPath,
+
+    const split = path.win32
+      .basename(songPath, path.extname(songPath))
+      .split(" - ");
+
+    ProgramFiles.songs.index[songPath] = {
       duration: Math.round(metadata.format.duration),
-      trackName: metadata.common.title,
-      artist: metadata.common.albumartist,
+      trackName: metadata.common.title || split[0],
+      artist: metadata.common.artist || split[1],
     };
   }
   async recursiveRoot(dir, recurse = true) {
@@ -91,17 +75,15 @@ class SongsUtility {
         const itemPath = path.format({ base: item, dir: folder });
         if (
           SongsUtility.supportedSongExtensions.includes(path.extname(item)) &&
-          !(
-            createHash("md5")
-              .update(path.win32.basename(itemPath))
-              .digest("hex") in ProgramFiles.songs.songsIndex
-          )
+          ProgramFiles.songs.index[itemPath] === undefined
         ) {
           await this.indexSong(itemPath);
         }
       }
     }
     ProgramFiles.saveSongs();
+
+    MixPlayer;
   }
 }
 
