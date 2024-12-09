@@ -7,7 +7,7 @@ const PlaylistsView = (screen) => {
     width: "15%",
     height: "75%",
 
-    items: ["All", ...ProgramFiles.playlists.playlists],
+    items: ["All", ...Object.keys(ProgramFiles.playlists.user)],
     style: {
       selected: {
         fg: ProgramFiles.prefs.ui.secondaryColor,

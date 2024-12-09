@@ -25,7 +25,7 @@ initFinder(programScreen);
 
 SongsUtility.rightView = rightView;
 
-songsView.updateList(ProgramFiles.songs.index);
+songsView.updateList(ProgramFiles.playlists.all);
 
 songsView.list.focus();
 

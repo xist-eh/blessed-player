@@ -111,22 +111,14 @@ const SongsView = (screen) => {
   const factory = {
     element: songsViewBox,
     list: songsListBox,
-    updateList: (jsonList) => {
-      jsonSongs = jsonList;
-
+    updateList: (list) => {
       songsNameList.clearItems();
       songArtistsList.clearItems();
       songDurationsList.clearItems();
 
-      Object.values(jsonSongs).forEach((val) => {
-        songsNameList.addItem(val.trackName.substring(0, 32));
-        songArtistsList.addItem(val.artist.split(";")[0]);
-        const minutes = Math.floor(val.duration / 60);
-        const seconds = "0" + (val.duration - minutes * 60).toString();
-        songDurationsList.addItem(
-          minutes.toString() + ":" + seconds.substring(seconds.length - 2)
-        );
-      });
+      for (const songPath of list) {
+        songsNameList.addItem(songPath);
+      }
     },
   };
 

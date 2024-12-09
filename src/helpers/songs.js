@@ -24,7 +24,9 @@ class SongsUtility {
     for (const item of readdirSync(dir)) {
       const itemPath = path.format({ dir: dir, base: item });
       if (SongsUtility.supportedSongExtensions.includes(path.extname(item))) {
-        await this.indexSong(itemPath);
+        ProgramFiles.playlists.all.push(
+          path.win32.basename(itemPath, path.extname(itemPath))
+        );
       } else if (recurse && statSync(itemPath).isDirectory()) {
         this.recursiveRoot(itemPath);
       }
@@ -43,7 +45,6 @@ class SongsUtility {
       await this.recursiveRoot(dir);
     }
     ProgramFiles.saveIncludedFolders();
-    ProgramFiles.saveSongs();
 
     return;
   }
@@ -62,7 +63,7 @@ class SongsUtility {
         const itemPath = path.format({ base: item, dir: folder });
         if (
           SongsUtility.supportedSongExtensions.includes(path.extname(item)) &&
-          ProgramFiles.songs.index[itemPath] === undefined
+          ProgramFiles.playlists.all.indexOf(itemPath) === -1
         ) {
           ProgramFiles.playlists.all.push(
             path.win32.basename(itemPath, path.extname(itemPath))
@@ -70,8 +71,6 @@ class SongsUtility {
         }
       }
     }
-
-    MixPlayer;
   }
 }
 
