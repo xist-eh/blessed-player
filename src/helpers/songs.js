@@ -14,20 +14,7 @@ class SongsUtility {
     MixPlayer.play(index);
     this.rightView.setCurrentSong(ProgramFiles.songs.index[index].trackName);
   }
-  async indexSong(songPath) {
-    songPath = path.resolve(songPath);
-    const metadata = await parseFile(songPath);
 
-    const split = path.win32
-      .basename(songPath, path.extname(songPath))
-      .split(" - ");
-
-    ProgramFiles.songs.index[songPath] = {
-      duration: Math.round(metadata.format.duration),
-      trackName: metadata.common.title || split[0],
-      artist: metadata.common.artist || split[1],
-    };
-  }
   async recursiveRoot(dir, recurse = true) {
     if (ProgramFiles.includedFolders.folders.includes(dir)) {
       return;
@@ -77,11 +64,12 @@ class SongsUtility {
           SongsUtility.supportedSongExtensions.includes(path.extname(item)) &&
           ProgramFiles.songs.index[itemPath] === undefined
         ) {
-          await this.indexSong(itemPath);
+          ProgramFiles.playlists.all.push(
+            path.win32.basename(itemPath, path.extname(itemPath))
+          );
         }
       }
     }
-    ProgramFiles.saveSongs();
 
     MixPlayer;
   }
