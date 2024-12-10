@@ -4,7 +4,7 @@ import path from "path";
 
 class ProgramFiles {
   static prefsFile = path.resolve("./config/prefs.json");
-
+  static indexFile = path.resolve("./config/index.json");
   static includedfoldersFile = path.resolve("./config/included-folders.json");
   static playlistsFile = path.resolve("./config/playlists.json");
 
@@ -22,10 +22,16 @@ class ProgramFiles {
     folders: [],
   });
 
+  songsIndex = {};
+
   playlists = Object.seal({
     all: [],
     user: {},
   });
+
+  saveIndex() {
+    writeFileSync(ProgramFiles.indexFile, JSON.stringify(this.songsIndex));
+  }
 
   savePrefs() {
     writeFileSync(ProgramFiles.prefsFile, JSON.stringify(this.prefs));
@@ -55,12 +61,15 @@ class ProgramFiles {
           JSON.parse(readFileSync(ProgramFiles.prefsFile))
         ).forEach(([key, val]) => (this.prefs[key] = val))
       : this.savePrefs();
+
+    //For index file
+
     //For folder file
     existsSync(ProgramFiles.includedfoldersFile)
       ? Object.entries(
-          JSON.parse(readFileSync(ProgramFiles.includedfoldersFile))
-        ).forEach(([key, val]) => (this.includedFolders[key] = val))
-      : this.saveIncludedFolders();
+          JSON.parse(readFileSync(ProgramFiles.indexFile))
+        ).forEach(([key, val]) => (this.songsIndex[key] = val))
+      : this.saveIndex();
     //For playlists file
     existsSync(ProgramFiles.playlistsFile)
       ? Object.entries(

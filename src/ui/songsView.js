@@ -2,12 +2,19 @@ import blessed from "blessed";
 import { SongsUtility } from "../helpers/songs.js";
 import { ProgramFiles } from "../helpers/files.js";
 
+const prettyDuration = (time) => {
+  const minutes = Math.floor(time / 60);
+  const seconds = "0" + (time - minutes * 60).toString();
+  return minutes.toString() + ":" + seconds.substring(seconds.length - 2);
+};
+
 const SongsView = (screen) => {
   const songsViewBox = blessed.box({});
 
   screen.append(songsViewBox);
 
-  let jsonSongs;
+  let songsList = [];
+  let numDisplayedItems = 0;
 
   const songsNameHeader = blessed.text({
     content: "{bold}Song{/bold}",
@@ -90,20 +97,24 @@ const SongsView = (screen) => {
     songsNameList.up();
     songArtistsList.up();
     songDurationsList.up();
+
     screen.render();
   });
   songsListBox.key("down", () => {
-    if (songsListIndex < Object.keys(jsonSongs).length - 1) {
+    if (songsListIndex < songsList.length - 1) {
       songsListIndex++;
     }
 
     songsNameList.down();
     songArtistsList.down();
     songDurationsList.down();
+
     screen.render();
   });
   songsListBox.key("enter", () => {
-    SongsUtility.playSong(Object.keys(jsonSongs)[songsListIndex]);
+    if (songsList[songsListIndex]) {
+      SongsUtility.playSong(songsList[songsListIndex]);
+    }
   });
 
   songsViewBox.append(songsListBox);
@@ -111,13 +122,22 @@ const SongsView = (screen) => {
   const factory = {
     element: songsViewBox,
     list: songsListBox,
-    updateList: (list) => {
+    updateList: async (list) => {
+      songsList = list;
       songsNameList.clearItems();
       songArtistsList.clearItems();
       songDurationsList.clearItems();
 
-      for (const songPath of list) {
-        songsNameList.addItem(songPath);
+      numDisplayedItems = Math.min(songsList.length, songsNameList.height);
+
+      for (const i of songsList) {
+        const data = SongsUtility.getIndexedSongInfo(i);
+        if (!data) {
+          throw "Could not get index of current file, which is" + i;
+        }
+        songsNameList.addItem(data.trackName || "hi");
+        songArtistsList.addItem(data.artist || "hello");
+        songDurationsList.addItem(prettyDuration(data.duration) || "no");
       }
     },
   };

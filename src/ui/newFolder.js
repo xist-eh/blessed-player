@@ -44,14 +44,14 @@ export function initNewFolder(programScreen, songsView) {
       (async () => {
         await SongsUtility.addRootFolder(inp.value);
 
-        songsView.updateList(ProgramFiles.playlists.all);
+        await songsView.updateList(ProgramFiles.playlists.all);
 
         programScreen.remove(inp);
         programScreen.remove(header);
         programScreen.render();
       })();
     });
-    inp.on("cancel", () => {
+    inp.key("escape", () => {
       programScreen.remove(header);
       programScreen.remove(inp);
       programScreen.render();

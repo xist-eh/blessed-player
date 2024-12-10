@@ -6,13 +6,35 @@ import { MixPlayer } from "mix-player";
 import { ProgramFiles } from "./files.js";
 
 class SongsUtility {
-  static supportedSongExtensions = [".mp4", ".mp3", ".wav", ".m4a"];
+  static supportedSongExtensions = [".mp4", ".mp3", ".wav"];
   songsQueue;
-  rightView;
+  uiSetCurrentSong;
+  currentSongsList;
+
+  getIndexedSongInfo(filePath) {
+    return ProgramFiles.songsIndex[filePath]
+      ? {
+          trackName: ProgramFiles.songsIndex[filePath].trackName,
+          artist: ProgramFiles.songsIndex[filePath].artist,
+          duration: ProgramFiles.songsIndex[filePath].duration,
+        }
+      : null;
+  }
+
+  async getSongInfo(filePath) {
+    const metadata = await parseFile(filePath);
+    return {
+      duration: Math.round(metadata.format.duration),
+      trackName: metadata.common.title,
+      artist: metadata.common.albumartist,
+    };
+  }
 
   playSong(index) {
     MixPlayer.play(index);
-    this.rightView.setCurrentSong(ProgramFiles.songs.index[index].trackName);
+    this.getSongInfo(index).then((out) => {
+      this.uiSetCurrentSong(out.trackName);
+    });
   }
 
   async recursiveRoot(dir, recurse = true) {
@@ -24,9 +46,9 @@ class SongsUtility {
     for (const item of readdirSync(dir)) {
       const itemPath = path.format({ dir: dir, base: item });
       if (SongsUtility.supportedSongExtensions.includes(path.extname(item))) {
-        ProgramFiles.playlists.all.push(
-          path.win32.basename(itemPath, path.extname(itemPath))
-        );
+        ProgramFiles.playlists.all.push(itemPath);
+
+        ProgramFiles.songsIndex[itemPath] = await this.getSongInfo(itemPath);
       } else if (recurse && statSync(itemPath).isDirectory()) {
         this.recursiveRoot(itemPath);
       }
@@ -45,6 +67,8 @@ class SongsUtility {
       await this.recursiveRoot(dir);
     }
     ProgramFiles.saveIncludedFolders();
+    ProgramFiles.savePlaylists();
+    ProgramFiles.saveIndex();
 
     return;
   }
@@ -63,14 +87,17 @@ class SongsUtility {
         const itemPath = path.format({ base: item, dir: folder });
         if (
           SongsUtility.supportedSongExtensions.includes(path.extname(item)) &&
-          ProgramFiles.playlists.all.indexOf(itemPath) === -1
+          ProgramFiles.songsIndex[itemPath] === undefined
         ) {
-          ProgramFiles.playlists.all.push(
-            path.win32.basename(itemPath, path.extname(itemPath))
-          );
+          ProgramFiles.playlists.all.push(itemPath);
+          ProgramFiles.songsIndex[itemPath] = await this.getSongInfo(itemPath);
         }
       }
     }
+    ProgramFiles.savePlaylists();
+    ProgramFiles.saveIndex();
+
+    this.currentSongsList = ProgramFiles.playlists.all;
   }
 }
 

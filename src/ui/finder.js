@@ -64,7 +64,7 @@ export function initFinder(programScreen) {
       programScreen.remove(header);
       programScreen.render();
     });
-    inp.on("cancel", () => {
+    inp.key("escape", () => {
       programScreen.remove(header);
       programScreen.remove(inp);
       programScreen.render();

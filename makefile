@@ -7,9 +7,9 @@ run: src/app.js
 
 clean: 
 	rm config/prefs.json
-	rm config/songs.json
 	rm config/included-folders.json
 	rm config/playlists.json
+	rm config/index.json
 
 clean-addon:
 	rm -rf src/player/build
