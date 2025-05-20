@@ -2,7 +2,11 @@ import blessed from "blessed";
 
 import { ProgramFiles } from "../helpers/files.js";
 
-export function initFinder(programScreen) {
+/**
+ *
+ * @param {blessed.Widgets.Screen} programScreen
+ */
+export function SearchBox(programScreen) {
   programScreen.key(["f"], () => {
     const inp = blessed.textbox({
       keys: true,

@@ -1,5 +1,11 @@
 import blessed from "blessed";
 import { ProgramFiles } from "../helpers/files.js";
+
+/**
+ *
+ * @param {blessed.Widgets.Screen} screen
+ * @returns
+ */
 const PlaylistsView = (screen) => {
   const playlistList = blessed.list({
     top: "center",

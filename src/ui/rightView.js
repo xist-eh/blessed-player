@@ -1,6 +1,11 @@
 import blessed from "blessed";
 import { ProgramFiles } from "../helpers/files.js";
 
+/**
+ *
+ * @param {blessed.Widgets.Screen} screen
+ * @returns
+ */
 export const RightView = (screen) => {
   const currentlyPlayingHeader = blessed.text({
     top: -1,

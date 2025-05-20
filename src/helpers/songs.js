@@ -5,39 +5,15 @@ import { MixPlayer } from "mix-player";
 
 import { ProgramFiles } from "./files.js";
 
-class SongsUtility {
-  static supportedSongExtensions = [".mp4", ".mp3", ".wav"];
-  songsQueue;
-  uiSetCurrentSong;
-  currentSongsList;
+const SongsUtility = (() => {
+  const supportedSongExtensions = [".mp4", ".mp3", ".wav"];
 
-  getIndexedSongInfo(filePath) {
-    return ProgramFiles.songsIndex[filePath]
-      ? {
-          trackName: ProgramFiles.songsIndex[filePath].trackName,
-          artist: ProgramFiles.songsIndex[filePath].artist,
-          duration: ProgramFiles.songsIndex[filePath].duration,
-        }
-      : null;
-  }
+  let songsQueue = [];
+  let currentPlaylist = ProgramFiles.playlists.all.slice();
 
-  async getSongInfo(filePath) {
-    const metadata = await parseFile(filePath);
-    return {
-      duration: Math.round(metadata.format.duration),
-      trackName: metadata.common.title,
-      artist: metadata.common.albumartist,
-    };
-  }
+  let rootFolders = [];
 
-  playSong(index) {
-    MixPlayer.play(index);
-    this.getSongInfo(index).then((out) => {
-      this.uiSetCurrentSong(out.trackName);
-    });
-  }
-
-  async recursiveRoot(dir, recurse = true) {
+  const indexFolder = async (dir, recurse) => {
     if (ProgramFiles.includedFolders.folders.includes(dir)) {
       return;
     }
@@ -45,62 +21,56 @@ class SongsUtility {
 
     for (const item of readdirSync(dir)) {
       const itemPath = path.format({ dir: dir, base: item });
-      if (SongsUtility.supportedSongExtensions.includes(path.extname(item))) {
+      if (supportedSongExtensions.includes(path.extname(item))) {
         ProgramFiles.playlists.all.push(itemPath);
+        const metadata = await parseFile(itemPath);
 
-        ProgramFiles.songsIndex[itemPath] = await this.getSongInfo(itemPath);
+        ProgramFiles.songsInfo[itemPath] = {
+          duration: Math.round(metadata.format.duration),
+          trackName: metadata.common.title,
+          artist: metadata.common.albumartist,
+        };
       } else if (recurse && statSync(itemPath).isDirectory()) {
-        this.recursiveRoot(itemPath);
+        indexFolder(itemPath, true);
       }
     }
-  }
-  async addRootFolder(dir) {
-    dir = path.resolve(dir);
+  };
 
-    if (!statSync(dir).isDirectory()) {
-      throw new Error("Directory has not been added!");
-    }
+  const factory = {
+    init: () => {},
+    getSongInfo: (filePath) => {
+      const data = ProgramFiles.songsInfo[filePath];
+      return {
+        trackName: data.trackName,
+        duration: data.duration,
+        artist: data.artist,
+      };
+    },
+    findSongFromCurrentPlaylist: (searchQuery) => {},
+    playSong: (filePath) => {
+      MixPlayer.play(filePath);
+    },
+    addRootFolder: async (folderPath, recursiveSearch) => {
+      folderPath = path.resolve(folderPath);
 
-    if (ProgramFiles.prefs.recursiveFolderSearch !== true) {
-      await this.recursiveRoot(dir, false);
-    } else {
-      await this.recursiveRoot(dir);
-    }
-    ProgramFiles.saveIncludedFolders();
-    ProgramFiles.savePlaylists();
-    ProgramFiles.saveIndex();
-
-    return;
-  }
-  getRootFolders() {
-    return ProgramFiles.includedFolders.folders;
-  }
-  constructor() {
-    if (SongsUtility._instance) {
-      throw new Error("New Instance of SongsUtility cannot be created!");
-    }
-    SongsUtility._instance = this;
-  }
-  async init() {
-    for (const folder of ProgramFiles.includedFolders.folders) {
-      for (const item of readdirSync(folder)) {
-        const itemPath = path.format({ base: item, dir: folder });
-        if (
-          SongsUtility.supportedSongExtensions.includes(path.extname(item)) &&
-          ProgramFiles.songsIndex[itemPath] === undefined
-        ) {
-          ProgramFiles.playlists.all.push(itemPath);
-          ProgramFiles.songsIndex[itemPath] = await this.getSongInfo(itemPath);
-        }
+      if (!statSync(folderPath).isDirectory()) {
+        throw new Error("Directory does not exist!");
       }
-    }
-    ProgramFiles.savePlaylists();
-    ProgramFiles.saveIndex();
 
-    this.currentSongsList = ProgramFiles.playlists.all;
-  }
-}
+      await indexFolder(folderPath, recursiveSearch);
 
-const SongsUtilityInstance = new SongsUtility();
+      ProgramFiles.saveIncludedFolders();
+      ProgramFiles.savePlaylists();
+      ProgramFiles.saveSongsInfo();
 
-export { SongsUtilityInstance as SongsUtility };
+      return;
+    },
+    getRootFolders: () => rootFolders,
+    getSongsQueue: () => songsQueue,
+    getCurrentPlaylist: () => currentPlaylist,
+  };
+
+  return factory;
+})();
+
+export { SongsUtility };

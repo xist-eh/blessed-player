@@ -2,8 +2,9 @@ import blessed from "blessed";
 import { ProgramFiles } from "../helpers/files.js";
 import { existsSync } from "node:fs";
 import { SongsUtility } from "../helpers/songs.js";
+import { uiBridge } from "../helpers/uiBridge.js";
 
-export function initNewFolder(programScreen, songsView) {
+export function NewFolderDialogue(programScreen, songsView) {
   programScreen.key("o", () => {
     const inp = blessed.textbox({
       keys: true,
@@ -44,7 +45,7 @@ export function initNewFolder(programScreen, songsView) {
       (async () => {
         await SongsUtility.addRootFolder(inp.value);
 
-        await songsView.updateList(ProgramFiles.playlists.all);
+        await uiBridge.updateSongsViewList(ProgramFiles.playlists.all);
 
         programScreen.remove(inp);
         programScreen.remove(header);

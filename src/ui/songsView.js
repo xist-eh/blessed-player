@@ -1,6 +1,7 @@
 import blessed from "blessed";
 import { SongsUtility } from "../helpers/songs.js";
 import { ProgramFiles } from "../helpers/files.js";
+import { uiBridge } from "../helpers/uiBridge.js";
 
 const prettyDuration = (time) => {
   const minutes = Math.floor(time / 60);
@@ -114,14 +115,18 @@ const SongsView = (screen) => {
   songsListBox.key("enter", () => {
     if (songsList[songsListIndex]) {
       SongsUtility.playSong(songsList[songsListIndex]);
+      uiBridge.updateCurrentlyPlayingSong(
+        SongsUtility.getSongInfo(songsList[songsListIndex]).trackName
+      );
     }
   });
 
   songsViewBox.append(songsListBox);
 
   const factory = {
-    element: songsViewBox,
-    list: songsListBox,
+    focusOnElement: () => {
+      songsListBox.focus();
+    },
     updateList: async (list) => {
       songsList = list;
       songsNameList.clearItems();
@@ -131,9 +136,9 @@ const SongsView = (screen) => {
       numDisplayedItems = Math.min(songsList.length, songsNameList.height);
 
       for (const i of songsList) {
-        const data = SongsUtility.getIndexedSongInfo(i);
+        const data = SongsUtility.getSongInfo(i);
         if (!data) {
-          throw "Could not get index of current file, which is" + i;
+          throw "Could not get index of current file, which is " + i;
         }
         songsNameList.addItem(data.trackName || "hi");
         songArtistsList.addItem(data.artist || "hello");
